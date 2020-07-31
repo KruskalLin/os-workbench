@@ -6,7 +6,8 @@
 #include <stdarg.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-#define MAX_LENGTH 200
+#define MAX_LENGTH 20
+
 
 int vsprintf(char* str, const char* fmt, va_list ap) {
     char* p_str = str;
@@ -19,11 +20,30 @@ int vsprintf(char* str, const char* fmt, va_list ap) {
 //            int width, prec, length, flag=-1;
             p_format++;
             char* s;
+            long long d;
             switch (*p_format) {
                 case 's':
                     s = va_arg(ap, char*);
                     while(*s)
                         *p_str++ = *s++;
+                    break;
+                case 'd':
+                    d = va_arg(ap, long long);
+                    if(d < 0) {
+                        *p_str++ = '-';
+                        d = -d;
+                    }
+                    char output[MAX_LENGTH];
+                    int len = 0;
+                    if(d == 0)
+                        output[len++] = '0';
+                    while(d != 0) {
+                        output[len++] = d % 10 + '0';
+                        d /= 10;
+                    }
+                    len--;
+                    while(len >= 0)
+                        *p_str++ = output[len--];
                     break;
                 default:;
             }
@@ -34,14 +54,14 @@ int vsprintf(char* str, const char* fmt, va_list ap) {
 }
 
 int printf(const char* fmt, ...) {
-    char output[MAX_LENGTH];
     va_list ap;
     va_start(ap, fmt);
-    int len = vsprintf(output, fmt, ap);
+    char str[MAX_LENGTH];
+    int len = vsprintf(str, fmt, ap);
     va_end(ap);
     int i = 0;
-    while(output[i]){
-        _putc(output[i]);
+    while(str[i]){
+        _putc(str[i]);
         i++;
     }
     return len;
@@ -67,7 +87,6 @@ int vsnprintf(char* str, size_t size, const char *format, va_list ap) {
 int sscanf(const char* str, const char *format, ...) {
     return 0;
 }
-void qsort(void* base, size_t nmemb, size_t size, int (*compar)(const void *, const void *)) {}
 
 
 #endif

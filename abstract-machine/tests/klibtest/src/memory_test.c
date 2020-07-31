@@ -1,5 +1,4 @@
 #include <klib.h>
-#include <klib-macros.h>
 
 #define N 64
 #define CMPN 6
@@ -26,7 +25,7 @@ static void check_sequence(int st, int ed, int initval) {
 
 static void check_cmp(int result,char* src1, char* src2){
   int r=strcmp(src1, src2);
-  if(result == 0) assert(r == 0);
+  if(result == 0)assert(r == 0);
   else assert(r*result>0);
 }
 
@@ -100,7 +99,7 @@ static void test_strcpy(void) {
 static void test_strcmp(void) {
   for(int i = 0;i < CMPN;i ++){
     for(int j = 0;j < CMPN;j ++){
-      check_cmp(i - j, cmp_data[i], cmp_data[j]);
+      check_cmp(i - j,cmp_data[i], cmp_data[j]);
     }
   }
 }
@@ -111,9 +110,9 @@ static void kernel(void (*k)(void), const char *name) {
 }
 
 void memory_test() {
-    kernel(test_strcmp, "strcmp");
-    kernel(test_memset, "memset");
-    kernel(test_memmove, "memmove");
-    kernel(test_memcpy, "memcpy");
-    kernel(test_strcpy, "strcpy");
+  kernel(test_memset, "memset");
+  kernel(test_memmove, "memmove");
+  kernel(test_memcpy, "memcpy");
+  kernel(test_strcpy, "strcpy");
+  kernel(test_strcmp, "strcmp");
 }

@@ -1,34 +1,64 @@
 #include <game.h>
-#include <game-macros.h>
 
-#define SIDE 16
-static int w, h;
+uint32_t w, h;
+uint8_t isLeft = 0;
+uint32_t mario_r[] = {
+        0, 0, 0,        0,        0,        0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0,        0,        0,        0,        0, 0,
+        0, 0, 0,        0,        0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0,        0, 0,
+        0, 0, 0,        0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0xe39d25, 0xe39d25, 0x6a6b04, 0xe39d25, 0,        0,        0,        0, 0,
+        0, 0, 0,        0x6a6b04, 0xe39d25, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0,        0, 0,
+        0, 0, 0,        0x6a6b04, 0xe39d25, 0x6a6b04, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0, 0,
+        0, 0, 0,        0x6a6b04, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0, 0,
+        0, 0, 0,        0,        0,        0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0,        0,        0, 0,
+        0, 0, 0,        0,        0x6a6b04, 0x6a6b04, 0xb13425, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0,        0,        0,        0, 0,
+        0, 0, 0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0xb13425, 0x6a6b04, 0x6a6b04, 0xb13425, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0, 0,
+        0, 0, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0, 0,
+        0, 0, 0xe39d25, 0xe39d25, 0x6a6b04, 0xb13425, 0xe39d25, 0xb13425, 0xb13425, 0xe39d25, 0xb13425, 0x6a6b04, 0xe39d25, 0xe39d25, 0, 0,
+        0, 0, 0xe39d25, 0xe39d25, 0xe39d25, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xe39d25, 0xe39d25, 0xe39d25, 0, 0,
+        0, 0, 0xe39d25, 0xe39d25, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xe39d25, 0xe39d25, 0, 0,
+        0, 0, 0,        0,        0xb13425, 0xb13425, 0xb13425, 0,        0,        0xb13425, 0xb13425, 0xb13425, 0,        0,        0, 0,
+        0, 0, 0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0,        0,        0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0, 0,
+        0, 0, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0,        0,        0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0, 0,
+};
+
+uint32_t mario_l[] = {
+        0, 0, 0,        0,        0,        0,        0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0,        0,        0,        0, 0,
+        0, 0, 0,        0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0,        0,        0, 0,
+        0, 0, 0,        0,        0,        0xe39d25, 0x6a6b04, 0xe39d25, 0xe39d25, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0,        0, 0,
+        0, 0, 0,        0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0xe39d25, 0x6a6b04, 0,        0, 0,
+        0, 0, 0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0x6a6b04, 0xe39d25, 0x6a6b04, 0,        0, 0,
+        0, 0, 0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0x6a6b04, 0x6a6b04, 0,        0, 0,
+        0, 0, 0,        0,        0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0xe39d25, 0,        0,        0,        0, 0,
+        0, 0, 0,        0,        0,        0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0xb13425, 0x6a6b04, 0x6a6b04, 0,        0,        0, 0,
+        0, 0, 0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0xb13425, 0x6a6b04, 0x6a6b04, 0xb13425, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0, 0,
+        0, 0, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0, 0,
+        0, 0, 0xe39d25, 0xe39d25, 0x6a6b04, 0xb13425, 0xe39d25, 0xb13425, 0xb13425, 0xe39d25, 0xb13425, 0x6a6b04, 0xe39d25, 0xe39d25, 0, 0,
+        0, 0, 0xe39d25, 0xe39d25, 0xe39d25, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xe39d25, 0xe39d25, 0xe39d25, 0, 0,
+        0, 0, 0xe39d25, 0xe39d25, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xb13425, 0xe39d25, 0xe39d25, 0, 0,
+        0, 0, 0,        0,        0xb13425, 0xb13425, 0xb13425, 0,        0,        0xb13425, 0xb13425, 0xb13425, 0,        0,        0, 0,
+        0, 0, 0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0,        0,        0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0, 0,
+        0, 0, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0,        0,        0,        0,        0x6a6b04, 0x6a6b04, 0x6a6b04, 0x6a6b04, 0, 0
+};
+
+
 
 void init_video() {
-    _DEV_VIDEO_INFO_t info = {0};
-    _io_read(_DEV_VIDEO, _DEVREG_VIDEO_INFO, &info, sizeof(info));
-    w = info.width;
-    h = info.height;
+    w = screen_width();
+    h = screen_height();
 }
 
-//static void draw_tile(int x, int y, int w, int h, uint32_t color) {
-//    uint32_t pixels[w * h]; // careful! stack is limited!
-//    _DEV_VIDEO_FBCTRL_t event = {
-//            .x = x, .y = y, .w = w, .h = h, .sync = 1,
-//            .pixels = pixels,
-//    };
-//    for (int i = 0; i < w * h; i++) {
-//        pixels[i] = color;
-//    }
-//    _io_write(_DEV_VIDEO, _DEVREG_VIDEO_FBCTRL, &event, sizeof(event));
-//}
+void clear_video() {
+    uint32_t pixels[1]; // careful! stack is limited!
+    pixels[0] = BACKGROUND;
+    _DEV_VIDEO_FBCTRL_t event = {
+            .x = 0, .y = 0, .w = w, .h = h, .sync = 1,
+            .pixels = pixels,
+    };
+    _io_write(_DEV_VIDEO, _DEVREG_VIDEO_FBCTRL, &event, sizeof(event));
+}
 
-/**
- *
- * @param type: 0 indicates left type of mario; 1 indicates right type of mario;
- */
-void draw_mario(int x, int y, int type) {
-    if(type == 0) {
+void draw_mario() {
+    if(isLeft) {
         _DEV_VIDEO_FBCTRL_t event = {
                 .x = x, .y = y, .w = MARIO_WIDTH, .h = MARIO_HEIGHT, .sync = 1,
                 .pixels = mario_l,
